@@ -1,0 +1,8 @@
+{
+  "name": "Graphy",
+  "app_id": "78a1bbc7",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}

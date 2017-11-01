@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Graphy
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>LogIn
+  <button ion-button full (click)="loginWithFB()">
+  </button>
+
+  <div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
+
+  <div>
+    access token: {{accessToken}}
+    
+    friends: {{friends}}
+
+    pages: {{pages}}
+
+    movies: {{movies}}
+  </div>
+ 
+  <ion-card *ngIf="userData">
+    <ion-card-header>{{ userData.username }}</ion-card-header>
+    <img [src]="userData.picture" />
+    <ion-card-content>
+      <p>Email: {{ userData.email }}</p>
+      <p>First Name: {{ userData.first_name }}</p>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
