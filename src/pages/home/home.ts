@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { Component, OnInit, Pipe, ViewChild } from '@angular/core';
+import { NavController, Slides } from 'ionic-angular';
 import { Http,Response } from '@angular/http';
 import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
 import 'rxjs/add/operator/map';
@@ -16,7 +16,8 @@ export class HomePage implements OnInit{
   public isLoggedIn: boolean = false;
   public friends:any;
   public friendList:any;
-  public friendLists;
+  public isFriendLists=false;
+  public friendLists:any;
   public accessToken:string;
   public loginStatus:any;
   public movies:any;
@@ -26,24 +27,39 @@ export class HomePage implements OnInit{
   public friendsAPI={ method: 'GET', relative_url: +this.accountID+'/taggable_friends'};
   public booksAPI={ method: 'GET', relative_url: +'me/likes'};
   public moviesAPI={ method: 'GET', relative_url: +'me/likes'};
+
+  slides:any[];
+  haveData:boolean = false;
+
+
+  greeting: string;
+  testSlides: string[] = [];
+  adi = {
+        slidesPerView:3,
+        pager: true,
+        nextButton: ".swiper-button-next",
+        prevButton: ".swiper-button-prev",        
+        onInit:()=>{
+        }
+     };
+  @ViewChild('mySlider') mySlider: any;
   
   ngOnInit() {
-
   }
 
   constructor(public navCtrl: NavController,public facebook:Facebook,public http:Http) {
-
+    
   }
 
   public loginWithFB() {
     this.facebook.login(AppConstant.FACEBOOK_PERMISSIONS)
     .then((response: FacebookLoginResponse) => {
-      this.facebook.api('me?fields=id,name,email,first_name,picture.width(60).height(60).as(picture_large)', []).then(profile => {
+      this.facebook.api('me?fields=id,name,email,first_name,picture.width(32).height(32).as(picture_large)', []).then(profile => {
         if(response){
           console.log('response received: '+JSON.stringify(response));
           if(response.authResponse.accessToken){
             this.accessToken=response.authResponse.accessToken;
-            console.log("Access token received: "+this.accessToken);
+            //console.log("Access token received: "+this.accessToken);
             this.getMovies(this.accessToken);
             this.getPages(this.accessToken);
             this.getFriendsAPI(response.authResponse.userID,this.accessToken);
@@ -55,7 +71,6 @@ export class HomePage implements OnInit{
     error=>{
       console.log('login error: '+JSON.stringify(error));
     });
-
   }
 
   public getLoginStatus(){
@@ -90,11 +105,12 @@ export class HomePage implements OnInit{
     // });
     console.log(AppConstant.MOVIES+AppConstant.ACCESS_TOKEN+accessToken);
     this.http.get(AppConstant.MOVIES+AppConstant.ACCESS_TOKEN+accessToken)
-    .map(res => res.json())
+    .map(res => res.json(),err=>err.json())
     .subscribe(response=>{
-      this.movies=JSON.stringify(response.data);
+      this.movies=response.data;
       console.log('movies response: '+JSON.stringify(response.data));
     },error=>{
+      this.movies=JSON.stringify(error);
       console.log('movies response error: '+JSON.stringify(error));
     });
   }
@@ -109,11 +125,12 @@ export class HomePage implements OnInit{
     // });
     console.log(AppConstant.FACEBOOK_PAGES+AppConstant.ACCESS_TOKEN+accessToken);
     this.http.get(AppConstant.FACEBOOK_PAGES+AppConstant.ACCESS_TOKEN+accessToken)
-    .map(res => res.json())
+    .map(res => res.json(),err=>err.json())
     .subscribe(response=>{
-      this.pages=JSON.stringify(response.data);
+      this.pages=response.data;
       console.log('pages response: '+JSON.stringify(response.data));
     },error=>{
+      this.pages=JSON.stringify(error);
       console.log('pages response error: '+JSON.stringify(error));
     });
   }
@@ -128,12 +145,24 @@ export class HomePage implements OnInit{
     // });
     console.log(AppConstant.getFriendsAPI(accountID)+AppConstant.ACCESS_TOKEN+accessToken);
     this.http.get(AppConstant.getFriendsAPI(accountID)+AppConstant.ACCESS_TOKEN+accessToken)
-    .map(res => res.json())
-    .subscribe(data=>{
-      var res=data;
-      this.friends=JSON.stringify(data.data);
-      console.log('friends response: '+JSON.stringify(data));
+    .map(res => res.json(),err=>err.json())
+    .subscribe(response=>{
+      this.isFriendLists=false;
+      this.friendLists=response.data;
+    //   JSON.stringify(response.data).replace(/(?!\w|\s)./g, '')
+    // .replace(/\s+/g, ' ')
+    // .replace(/^(\s*)([\W\w]*)(\b\s*$)/g, '$2');
+      // this.friends=JSON.stringify(this.friendLists);
+
+      if (this.friendLists.length>1){
+        this.slides=this.friendLists.length;
+        this.haveData=true;
+      }
+   
+      // this.friends=this.friendLists.data;
+      console.log('friends response: '+JSON.stringify(response.data));
     },error=>{
+      this.friendLists=JSON.stringify(error);
       console.log('friends response error: '+JSON.stringify(error));
     });
   }
@@ -143,6 +172,26 @@ export class HomePage implements OnInit{
     //   response=>{
     //     console.log(JSON.stringify(response));
     //   });
+  }
+
+  public swipeNext(){
+    let currentIndex = this.mySlider.getActiveIndex();
+    console.log('Current index is', currentIndex);
+    console.log('length: ', this.mySlider.length());
+    // if(this.mySlider.length()<currentIndex+1){
+      console.log('index changed: ',currentIndex+1);;
+      this.mySlider.slideTo(currentIndex+1, 500);
+    // }
+  }
+
+  public swipePrev(){
+    let currentIndex = this.mySlider.getActiveIndex();
+    console.log('Current index is', currentIndex);
+    console.log('length: ', this.mySlider.length());
+    // if(this.mySlider.length()<currentIndex+1){
+      console.log('index changed: ',currentIndex-1);;
+      this.mySlider.slideTo(currentIndex-1, 500);
+    // }
   }
 
 }

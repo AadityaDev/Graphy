@@ -4,15 +4,19 @@ var AppConstant = /** @class */ (function () {
     AppConstant.getMovies = function () {
         return AppConstant.BASE_URL + "me/movies";
     };
+    AppConstant.getFriendsAPI = function (accountID) {
+        return AppConstant.BASE_URL + accountID + "/taggable_friends";
+    };
     AppConstant.APP_ID = "344425272651292";
     AppConstant.APP_SECRET = "2bdad5b42f91636b73bb2b7e6e6c19f0";
     AppConstant.FACEBBOK_PROFILE = "344425272651292";
     AppConstant.BASE_URL = "https://graph.facebook.com/v2.10/";
     AppConstant.GRAPH_GET_FRIEND = AppConstant.BASE_URL;
     AppConstant.PROFILE_FIELDS = "?fields=id%2Cname%2Cemail%2Cfirst_name%2Cpicture";
-    AppConstant.MOVIES = "/me/movies";
+    AppConstant.MOVIES = AppConstant.BASE_URL + "me/movies";
     AppConstant.FACEBOOK_PERMISSIONS = ['email', 'public_profile', 'user_friends', 'public_profile', 'user_actions.books', 'user_actions.fitness', 'user_actions.music', 'user_likes'];
-    AppConstant.FACEBOOK_PAGES = "/me/likes";
+    AppConstant.FACEBOOK_PAGES = AppConstant.BASE_URL + "me/likes";
+    AppConstant.ACCESS_TOKEN = "?access_token=";
     AppConstant.GRAPH_FRIENDS = {
         "data": [
             {

@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Http } from '@angular/http';
 import { Facebook } from '@ionic-native/facebook';
@@ -19,6 +19,19 @@ var HomePage = /** @class */ (function () {
         this.facebook = facebook;
         this.http = http;
         this.isLoggedIn = false;
+        this.isFriendLists = false;
+        this.friendsAPI = { method: 'GET', relative_url: +this.accountID + '/taggable_friends' };
+        this.booksAPI = { method: 'GET', relative_url: +'me/likes' };
+        this.moviesAPI = { method: 'GET', relative_url: +'me/likes' };
+        this.testSlides = [];
+        this.adi = {
+            slidesPerView: 3,
+            pager: true,
+            nextButton: ".swiper-button-next",
+            prevButton: ".swiper-button-prev",
+            onInit: function () {
+            }
+        };
     }
     HomePage.prototype.ngOnInit = function () {
     };
@@ -32,14 +45,15 @@ var HomePage = /** @class */ (function () {
                     if (response.authResponse.accessToken) {
                         _this.accessToken = response.authResponse.accessToken;
                         console.log("Access token received: " + _this.accessToken);
-                        _this.getMovies();
-                        _this.getPages();
+                        _this.getMovies(_this.accessToken);
+                        _this.getPages(_this.accessToken);
+                        _this.getFriendsAPI(response.authResponse.userID, _this.accessToken);
                     }
                 }
                 _this.userData = { email: profile['email'], first_name: profile['first_name'], picture: profile['picture_large']['data']['url'], username: profile['name'] };
             });
         }, function (error) {
-            console.log('login error: ' + error);
+            console.log('login error: ' + JSON.stringify(error));
         });
     };
     HomePage.prototype.getLoginStatus = function () {
@@ -51,7 +65,7 @@ var HomePage = /** @class */ (function () {
                 console.log("Login Status: " + _this.loginStatus);
             }
         }, function (error) {
-            console.log("Login Status error: " + _this.loginStatus);
+            console.log("Login Status error: " + JSON.stringify(error));
         });
     };
     HomePage.prototype.getAccessToken = function () {
@@ -61,27 +75,79 @@ var HomePage = /** @class */ (function () {
             _this.accessToken = JSON.stringify(response);
             console.log("access token: " + JSON.stringify(response));
         }, function (error) {
-            console.log("access token error: " + _this.accessToken);
+            console.log("access token error: " + JSON.stringify(error));
         });
     };
-    HomePage.prototype.getMovies = function () {
-        this.facebook.api(AppConstant.MOVIES, AppConstant.FACEBOOK_PERMISSIONS)
-            .then(function (response) {
-            console.log('movies response: ' + JSON.stringify(response));
+    HomePage.prototype.getMovies = function (accessToken) {
+        var _this = this;
+        // this.facebook.api(AppConstant.MOVIES,AppConstant.FACEBOOK_PERMISSIONS)
+        // .then(response=>{
+        //   this.movies=JSON.stringify(response.data);
+        //   console.log('movies response: '+JSON.stringify(response));
+        // },error=>{
+        //   console.log('movies response error: '+JSON.stringify(error));
+        // });
+        console.log(AppConstant.MOVIES + AppConstant.ACCESS_TOKEN + accessToken);
+        this.http.get(AppConstant.MOVIES + AppConstant.ACCESS_TOKEN + accessToken)
+            .map(function (res) { return res.json(); }, function (err) { return err.json(); })
+            .subscribe(function (response) {
+            _this.movies = JSON.stringify(response.data);
+            console.log('movies response: ' + JSON.stringify(response.data));
         }, function (error) {
+            _this.movies = JSON.stringify(error);
             console.log('movies response error: ' + JSON.stringify(error));
         });
     };
-    HomePage.prototype.getPages = function () {
+    HomePage.prototype.getPages = function (accessToken) {
         var _this = this;
-        this.facebook.api(AppConstant.FACEBOOK_PAGES, AppConstant.FACEBOOK_PERMISSIONS)
-            .then(function (response) {
+        // this.facebook.api(AppConstant.FACEBOOK_PAGES,AppConstant.FACEBOOK_PERMISSIONS)
+        // .then(response=>{
+        //   this.pages=JSON.stringify(response.data);
+        //   console.log('pages response: '+JSON.stringify(response));
+        // },error=>{
+        //   console.log('pages response error: '+JSON.stringify(error));
+        // });
+        console.log(AppConstant.FACEBOOK_PAGES + AppConstant.ACCESS_TOKEN + accessToken);
+        this.http.get(AppConstant.FACEBOOK_PAGES + AppConstant.ACCESS_TOKEN + accessToken)
+            .map(function (res) { return res.json(); }, function (err) { return err.json(); })
+            .subscribe(function (response) {
             _this.pages = JSON.stringify(response.data);
-            console.log('pages response: ' + JSON.stringify(response));
+            console.log('pages response: ' + JSON.stringify(response.data));
         }, function (error) {
+            _this.pages = JSON.stringify(error);
             console.log('pages response error: ' + JSON.stringify(error));
         });
     };
+    HomePage.prototype.getFriendsAPI = function (accountID, accessToken) {
+        var _this = this;
+        // this.facebook.api(AppConstant.getFriendsAPI(accountID),AppConstant.FACEBOOK_PERMISSIONS)
+        // .then(response=>{
+        //   this.friends=JSON.stringify(response.data);
+        //   console.log('friends response: '+JSON.stringify(response));
+        // },error=>{
+        //   console.log('friends response error: '+JSON.stringify(error));
+        // });
+        console.log(AppConstant.getFriendsAPI(accountID) + AppConstant.ACCESS_TOKEN + accessToken);
+        this.http.get(AppConstant.getFriendsAPI(accountID) + AppConstant.ACCESS_TOKEN + accessToken)
+            .map(function (res) { return res.json(); }, function (err) { return err.json(); })
+            .subscribe(function (response) {
+            _this.friendLists = JSON.stringify(response.data);
+            console.log('friends response: ' + JSON.stringify(response.data));
+        }, function (error) {
+            _this.friendLists = JSON.stringify(error);
+            console.log('friends response error: ' + JSON.stringify(error));
+        });
+    };
+    HomePage.prototype.getAllData = function () {
+        // this.facebook.api('/',{batch:[{ method: 'GET', relative_url: 'me/friends'}]}).then(
+        //   response=>{
+        //     console.log(JSON.stringify(response));
+        //   });
+    };
+    __decorate([
+        ViewChild('mySlider'),
+        __metadata("design:type", Object)
+    ], HomePage.prototype, "mySlider", void 0);
     HomePage = __decorate([
         Component({
             selector: 'page-home',

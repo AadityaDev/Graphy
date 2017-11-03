@@ -1,21 +1,64 @@
 page-home {
 
-	.scroll-zoom-wrapper {
-        white-space: nowrap;
-    }
+  body,
+  html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
 
-    .ion-card {
-        width: 500px !important;
-        display: inline-block;
-    }
+  .container {
+    width: 100%;
+    height: 100%;
+  }
 
-    .ion-scroll {
-        min-height: 160px; 
-        height: auto;
+  .leftpane {
+    width: 10%;
+    height: 25%;
+    float: left;
+    background-color: rosybrown;
+    border-collapse: collapse;
+  }
 
-            .scroll-content {
-            padding: 0px !important;
-        }
-    }     
+  .middlepane {
+    width: 80%;
+    height: 25%;
+    float: left;
+    background-color: royalblue;
+    border-collapse: collapse;
+  }
 
+  .rightpane {
+    width: 10%;
+    height: 25%;
+    position: relative;
+    float: right;
+    background-color: yellow;
+    border-collapse: collapse;
+  }
+
+  .toppane {
+    width: 100%;
+    height: 42%;
+    border-collapse: collapse;
+    background-color: #4da6ff;
+  }
+
+  .bottompane {
+    width: 100%;
+    height: 60%;
+    float: left;
+    border-collapse: collapse;
+  }
+
+  .img-circle {
+    padding-left: 4px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+  }
+
+  .side-image {
+    height: 80%;
+  }
 }

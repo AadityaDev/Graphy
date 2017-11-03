@@ -5,30 +5,69 @@
     </ion-title>
   </ion-navbar>
 </ion-header>
-
-<ion-content padding>LogIn
-  <button ion-button full (click)="loginWithFB()">
-  </button>
-
-  <div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
-
-  <div>
-    access token: {{accessToken}}
-    
-    friends: {{friends}}
-
-    pages: {{pages}}
-
-    movies: {{movies}}
+<ion-content padding>
+  <!-- container -->
+  <div class="container">
+    <!-- top panel -->
+    <div class="toppane">
+      <!-- log in button -->
+      <button ion-button full (click)="loginWithFB()" text="LogIn">
+        LogIn
+      </button>
+      <!-- card detail -->
+      <ion-card *ngIf="userData">
+        <ion-avatar item-start>
+          <img [src]="userData.picture" class="img-circle" />
+        </ion-avatar>
+        <ion-card-content>
+          <ion-card-title>
+            {{ userData.username }}
+          </ion-card-title>
+          <p>Email: {{ userData.email }}</p>
+          <p>First Name: {{ userData.first_name }}</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+    <!-- left panel -->
+    <div class="leftpane">
+    </div>
+    <!-- middle panel -->
+    <div class="middlepane">
+      <ion-slides slides #mySlider loop="true" speed="3000">
+        <ion-slide *ngFor="let frien of friendLists">
+          <ion-card>
+            {{frien.name}}
+            <!-- {{frien.picture.data.url}} -->
+            <img [src]="frien.picture.data.url" class="img-circle" />
+          </ion-card>
+        </ion-slide>
+      </ion-slides>
+      <div class="swiper-button-next" (click)="swipeNext()"></div>
+      <div class="swiper-button-prev" (click)="swipePrev()"></div>
+    </div>
+    <!-- right panel -->
+    <div class="rightpane">
+    </div>
+    <!-- bottom panel -->
+    <div class="bottompane">
+      <ion-list>
+        <ion-list-header>
+          <h1>Movies</h1>
+        </ion-list-header>
+        <ion-item *ngFor="let movie of movies">
+          {{movie.name}}
+        </ion-item>
+      </ion-list>
+      <div>
+      </div>
+      <ion-list>
+        <ion-list-header>
+          <h1>Liked Pages</h1>
+        </ion-list-header>
+        <ion-item *ngFor="let page of pages">
+          {{page.name}}
+        </ion-item>
+      </ion-list>
+    </div>
   </div>
- 
-  <ion-card *ngIf="userData">
-    <ion-card-header>{{ userData.username }}</ion-card-header>
-    <img [src]="userData.picture" />
-    <ion-card-content>
-      <p>Email: {{ userData.email }}</p>
-      <p>First Name: {{ userData.first_name }}</p>
-    </ion-card-content>
-  </ion-card>
-
 </ion-content>
